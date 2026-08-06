@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isMemberOfChat(chatData) {
+      return isAuthenticated() && request.auth.uid in chatData.members;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId);
+    }
+
+    // Username Reservation Collection
+    match /usernames/{username} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (!exists(/databases/$(database)/documents/usernames/$(username)) || request.resource.data.uid == request.auth.uid);
+      allow update, delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    // Devices / Push Tokens Collection
+    match /users/{userId}/devices/{deviceId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Chats Collection
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() && (resource == null || request.auth.uid in resource.data.members);
+      allow create, update: if isAuthenticated() && (
+        (request.resource != null && request.auth.uid in request.resource.data.members) ||
+        (resource != null && request.auth.uid in resource.data.members)
+      );
+      allow delete: if isAuthenticated() && resource != null && request.auth.uid in resource.data.members;
+
+      // Messages Sub-collection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated();
+      }
+    }
+
+    // Calls Collection
+    match /calls/{callId} {
+      allow read, write: if isAuthenticated() && 
+        (request.auth.uid == resource.data.callerId || request.auth.uid == resource.data.receiverId ||
+         request.auth.uid == request.resource.data.callerId || request.auth.uid == request.resource.data.receiverId);
+    }
+  }
+}

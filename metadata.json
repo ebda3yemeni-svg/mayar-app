@@ -1,0 +1,11 @@
+{
+  "name": "ميار - Mayar",
+  "description": "تطبيق محادثات وتواصل صوتي وفيديو احترافي باللغة العربية - Mayar Arabic Communication App",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

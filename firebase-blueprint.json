@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account profile information in Mayar",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Optional phone number"
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the user"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique username"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Avatar image URL"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Bio or status message"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["online", "offline"]
+        },
+        "lastSeen": {
+          "type": "string",
+          "description": "ISO date string of last activity"
+        },
+        "pushToken": {
+          "type": "string",
+          "description": "FCM Push notification token"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO date string of user creation"
+        }
+      },
+      "required": ["id", "email", "name", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile collection indexed by Firebase Auth UID"
+    }
+  }
+}
